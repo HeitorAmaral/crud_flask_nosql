@@ -1,17 +1,16 @@
+import os
 from flask import Flask, render_template, request, url_for, redirect
-from pymongo import MongoClient
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
-client = MongoClient('localhost', 27017)
-todo_db = client['todo']
-task_collection = todo_db['task']
-
-
-@app.route('/test')
-def test_mongo_query():
-    returned = find_next_id()
-    print(returned)
-    return returned
+app.config["MONGO_URI"] = "mongodb://"\
+                          + os.environ['MONGODB_USERNAME']\
+                          + ":" + os.environ['MONGODB_PASSWORD']\
+                          + "@" + os.environ['MONGODB_HOSTNAME']\
+                          + ":27017"\
+                          + "/" + os.environ['MONGODB_DATABASE']
+mongo = PyMongo(app)
+db = mongo.db
 
 
 @app.route('/')
@@ -47,9 +46,12 @@ def insert():
         if description:
             task_exists = find_by_description(description)
             if task_exists:
-                task_collection.update_one({"_id": task_exists.get('_id')}, {"$set": {"status": status}})
+                db.task.update_one({"_id": task_exists.get('_id')},
+                                   {"$set": {"status": status}})
             else:
-                task = task_collection.insert_one({"_id": find_next_id(), "description": description, "status": status})
+                task = db.task.insert_one({"_id": find_next_id(),
+                                           "description": description,
+                                           "status": status})
                 print(task.inserted_id)
         return redirect(url_for('find_all'))
     else:
@@ -65,7 +67,7 @@ def find_all():
     :return: Renders the page with the list of all Tasks stored in
      the database.
     """
-    tasks = task_collection.find()
+    tasks = db.task.find().sort("_id", 1)
     return render_template('list.html', tasks=tasks)
 
 
@@ -79,7 +81,7 @@ def delete_by_id(task_id):
      list of all Tasks.
     """
     task = find_by_id(task_id)
-    task_collection.delete_one({"_id": task.get('_id')})
+    db.task.delete_one({"_id": task.get('_id')})
     return redirect(url_for('find_all'))
 
 
@@ -102,12 +104,14 @@ def change_status_by_id(task_id):
     else:
         task_status = True
 
-    task_collection.update_one({"_id": task_id}, {"$set": {"status": task_status}})
+    db.task.update_one({"_id": task_id},
+                       {"$set": {"status": task_status}})
 
     return redirect(url_for('find_all'))
 
 
-@app.route('/update-by-id/<int:task_id>', methods=['GET', 'POST', 'PUT'])
+@app.route('/update-by-id/<int:task_id>',
+           methods=['GET', 'POST', 'PUT'])
 def update_by_id(task_id):
     """
     Method that updates a Task in the database by Identifier.
@@ -126,11 +130,13 @@ def update_by_id(task_id):
             task_exists = find_by_description(description)
             if task_exists:
                 return render_template('update.html', task=task,
-                                       message='Já existe um registro com'
-                                               ' essa descrição criado.'
-                                               ' Escolha outra descricão.')
+                                       message='Já existe um registro'
+                                               ' com essa descrição'
+                                               ' criado. Escolha outra'
+                                               ' descricão.')
             else:
-                task_collection.update_one({"_id": task.get('_id')}, {"$set": {"description": description}})
+                db.task.update_one({"_id": task.get('_id')},
+                                   {"$set": {"description": description}})
         return redirect(url_for('find_all'))
     return render_template('update.html', task=task)
 
@@ -143,7 +149,7 @@ def find_by_id(task_id):
     :return: Returns a Task.
     """
 
-    return task_collection.find_one({"_id": task_id})
+    return db.task.find_one({"_id": task_id})
 
 
 def find_by_description(description):
@@ -153,7 +159,7 @@ def find_by_description(description):
     :param description: (String) Description of the Task.
     :return: Returns a Task.
     """
-    return task_collection.find_one({"description": description})
+    return db.task.find_one({"description": description})
 
 
 def find_next_id():
@@ -163,7 +169,7 @@ def find_next_id():
 
     :return: Returns the Integer Identifier to be used.
     """
-    query = task_collection.find({}, {"_id": 1}).sort("_id", -1).limit(1)
+    query = db.task.find({}, {"_id": True}).sort("_id", -1).limit(1)
 
     for obj in query:
         return obj.get('_id') + 1
