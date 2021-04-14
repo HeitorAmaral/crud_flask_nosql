@@ -1,3 +1,6 @@
+"""
+Executable file.
+"""
 from src import app
 
 

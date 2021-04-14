@@ -1,5 +1,14 @@
+"""
+Initializer of src package.
+Defines the application, and imports view methods.
+"""
 from flask import Flask
 
 app = Flask(__name__)
 
-from src.controller import task_controller
+from src.controller.task_controller import index
+from src.controller.task_controller import find_all
+from src.controller.task_controller import insert
+from src.controller.task_controller import update_by_id
+from src.controller.task_controller import change_status_by_id
+from src.controller.task_controller import delete_by_id
