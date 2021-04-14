@@ -40,7 +40,7 @@ def find_all():
 def find_next_available_id():
     """
     Method that returns the next Identifier available to be used.
-    Querys the max Identifier in the Database, and increase one more.
+    Query the max Identifier in the Database, and increase one more.
 
     :return: Integer Identifier available to be use.
     :rtype: int
