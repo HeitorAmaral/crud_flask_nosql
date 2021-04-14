@@ -73,6 +73,13 @@ def insert():
             else:
                 db.insert_one(find_next_available_id(), description,
                               status)
+        else:
+            return render_template('insert.html',
+                                   message='É necessário preencher a'
+                                           ' Descrição da Tarefa.'
+                                           '  Preencha o campo'
+                                           ' Descrição.')
+
         return redirect(url_for('find_all'))
     else:
         return render_template('insert.html')
@@ -109,15 +116,24 @@ def update_by_id(task_id):
     if request.method == 'POST' or request.method == 'PUT':
         if description:
             task_exists = db.find_one({"description": description})
-            if task_exists:
+            if task_exists\
+                    and (task_exists.get('_id') != task.get('_id')):
                 return render_template('update.html', task=task,
                                        message='Já existe um registro'
-                                               ' com essa descrição'
-                                               ' criado. Escolha outra'
-                                               ' descricão.')
+                                               ' com a descrição '
+                                               + task_exists
+                                               .get('description')
+                                               + ' criado. Escolha'
+                                               ' outra Descrição.')
             else:
                 db.update_one({"_id": task_id},
                               {"description": description})
+        else:
+            return render_template('update.html', task=task,
+                                   message='É necessário preencher a'
+                                           ' Descrição da Tarefa.'
+                                           ' Preencha o campo'
+                                           ' Descrição.')
         return redirect(url_for('find_all'))
     return render_template('update.html', task=task)
 

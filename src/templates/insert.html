@@ -17,6 +17,9 @@
             <td>Tarefa finalizada?</td>
             <td><input type="checkbox" name="status"></td>
         </tr>
+        {% if message != '' %}
+            {{ message }}
+        {% endif %}
     </table>
     <br>
     <input type="submit" value="Salvar">
