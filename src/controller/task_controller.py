@@ -26,7 +26,8 @@ def find_all():
     :return: Renders the page with the list of all Tasks stored in
      the database.
     """
-    tasks = db.find({}, {}).sort("_id", 1)
+    tasks = db.find({}, {"_id": True, "description": True,
+                         "status": True})
     return render_template('list.html', tasks=tasks)
 
 
@@ -121,8 +122,7 @@ def update_by_id(task_id):
     return render_template('update.html', task=task)
 
 
-@app.route('/change-status-by-id/<int:task_id>', methods=['GET',
-                                                          'PUT'])
+@app.route('/change-status-by-id/<int:task_id>', methods=['GET', 'PUT'])
 def change_status_by_id(task_id):
     """
     Method that change the status of a Task by Identifier.

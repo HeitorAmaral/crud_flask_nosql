@@ -24,10 +24,6 @@ class TaskRepository:
 
         return mongo
 
-    def find_all_sorted_by_id_asc(self):
-        return self.get_mongo_connection().db.task.find().sort("_id",
-                                                               1)
-
     def find(self, parameters, fields):
         return self.get_mongo_connection().db.task.find(parameters,
                                                         fields)

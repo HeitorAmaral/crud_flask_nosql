@@ -21,7 +21,7 @@
             <td>{{ task._id }}</td>
             <td>{{ task.description }}</td>
             <td><input id="check_status" type="checkbox"
-                       onclick="window.location.href='{{ url_for('change_status_by_id', self=task._id) }}';"
+                       onclick="window.location.href='{{ url_for('change_status_by_id', task_id=task._id) }}';"
                     {% if task.status %} checked {% endif %}></td>
             <td><a href="/update-by-id/{{ task._id }}">Editar</a></td>
             <td><a href="/delete-by-id/{{ task._id }}">X</a></td>
