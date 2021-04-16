@@ -28,7 +28,7 @@ def find_all():
     the data.
 
     :return: Renders the page with the list of all Tasks stored in the
-     database.
+    database.
     :rtype: html
     """
 
@@ -60,8 +60,8 @@ def insert():
     already exists and returns or redirect the HTML page.
 
     :return: If a POST HTTP request called it, and no validation error
-     happens, returns the page with all registers. If not, renders the
-     page of insert a new Task.
+    happens, returns the page with all registers. If not, renders the
+    page of insert a new Task.
     :rtype: html
     """
     if request.method == 'POST':

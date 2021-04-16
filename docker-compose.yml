@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     command: flask run --host 0.0.0.0
     depends_on:
+      - unittest
       - db-mongo
     ports:
       - 5000:5000
@@ -31,6 +32,11 @@ services:
       - mongodbdata:/data/db
     networks:
       - backend
+
+  unittest:
+    container_name: unittest
+    build: .
+    command: python -m unittest tests.py
 
 networks:
   frontend:
