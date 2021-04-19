@@ -2,7 +2,6 @@ version: '3.8'
 services:
   app-flask:
     build: .
-    container_name: app-flask
     restart: unless-stopped
     command: flask run --host 0.0.0.0
     depends_on:
@@ -13,14 +12,13 @@ services:
     env_file:
       - .env.prod
     volumes:
-      - appdata:/var/www
+      - appdata:/app
     networks:
       - frontend
       - backend
 
   db-mongo:
     image: mongo
-    container_name: db-mongo
     restart: unless-stopped
     command: mongod --auth
     environment:
@@ -34,9 +32,32 @@ services:
       - backend
 
   unittest:
-    container_name: unittest
     build: .
     command: python -m unittest tests.py
+
+  es:
+    image: elasticsearch:5.4
+    volumes:
+      - esdata:/usr/share/elasticsearch/data/
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: kibana:5.4.3
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://es:9200
+    depends_on:
+      - es
+
+  logstash:
+    image: logstash:5.4.3
+    depends_on:
+      - es
+    volumes:
+      - appdata:/app
+    command: logstash -f /app/logstash.conf
 
 networks:
   frontend:
@@ -45,3 +66,4 @@ networks:
 volumes:
   mongodbdata:
   appdata:
+  esdata:

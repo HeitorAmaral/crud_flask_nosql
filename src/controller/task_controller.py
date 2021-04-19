@@ -18,6 +18,7 @@ def index():
     :return: Renders the index.html file.
     :rtype: html
     """
+    app.logger.info("Executing at: TaskController - index()")
     return render_template('index.html')
 
 
@@ -32,6 +33,7 @@ def find_all():
     :rtype: html
     """
 
+    app.logger.info("Executing at: TaskController - find_all()")
     tasks = db.find({}, {"_id": True, "description": True,
                          "status": True}).sort("_id", 1)
     return render_template('list.html', tasks=tasks)
@@ -45,6 +47,7 @@ def find_next_available_id():
     :return: Integer Identifier available to be use.
     :rtype: int
     """
+    app.logger.info("Executing at: TaskController - find_next_available_id()")
     query = db.find({}, {"_id": True}).sort("_id", -1).limit(1)
 
     for obj in query:
@@ -64,6 +67,7 @@ def insert():
     page of insert a new Task.
     :rtype: html
     """
+    app.logger.info("Executing at: TaskController - insert()")
     if request.method == 'POST':
         description = request.form.get('description')
         status = request.form.get('status')
@@ -104,7 +108,8 @@ def delete_by_id(task_id):
     :return: HTML page with the list all Tasks.
     :rtype: html
     """
-
+    app.logger.info(f"Executing at: TaskController -"
+                    f" delete_by_id(task_id={task_id})")
     db.delete_one({"_id": task_id})
     return redirect(url_for('find_all'))
 
@@ -123,6 +128,8 @@ def update_by_id(task_id):
     the form to update, with validation messages or not.
     :rtype: html
     """
+    app.logger.info(f"Executing at: TaskController -"
+                    f" update_by_id(task_id={task_id})")
     task = db.find_one({"_id": task_id})
     description = request.form.get('description')
 
@@ -160,6 +167,8 @@ def change_status_by_id(task_id):
     :return: Renders the HTML page with the list of all Tasks.
     :rtype: html
     """
+    app.logger.info(f"Executing at: TaskController -"
+                    f" change_status_by_id(task_id={task_id})")
     task = db.find_one({"_id": task_id})
     task_id = task.get('_id')
     task_status = task.get('status')

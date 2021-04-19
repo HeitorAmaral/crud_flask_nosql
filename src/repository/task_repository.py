@@ -3,18 +3,9 @@ Database communication
 """
 import os
 import mongomock
-import logging
 from flask_pymongo import PyMongo
 
 mongo = None
-os.environ['WERKZEUG_RUN_MAIN'] = 'true'
-logging.basicConfig(filename="logFile.log",
-                    filemode='a',
-                    format='%(asctime)s %(levelname)s-%(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    level=logging.INFO)
-log = logging.getLogger('werkzeug')
-log.disabled = True
 
 
 class TaskRepository:
@@ -62,8 +53,8 @@ class TaskRepository:
 
     def find(self, parameters, fields):
         """
-        Method to do a query in the database. Can be used parameters
-        to filter results, and fields to restrict return properties.
+        Method to do a query in the database. Can be used parameters to
+        filter results, and fields to restrict return properties.
         :param parameters: Constraints, or empty for all.
         :type parameters: dict
         :param fields: Fields required or empty for all.
@@ -71,20 +62,22 @@ class TaskRepository:
         :return: Query result containing all the documents queried.
         :rtype: pymongo.cursor.Cursor
         """
-        self.app.logger.debug(f'find(parameters={parameters}, '
-                              f'fields={fields})')
+        self.app.logger.info(f'Executing at: TaskRepository -'
+                             f' find(parameters={parameters},'
+                             f' fields={fields})')
         return self.get_mongo_connection().db.task.find(parameters, fields)
 
     def find_one(self, parameters):
         """
-        Method to do a query in the database. Can be used parameters
-        to filter results.
+        Method to do a query in the database. Can be used parameters to
+        filter results.
         :param parameters: Constraints, or empty for all.
         :type parameters: dict
         :return: Query result containing the document queried.
         :rtype: dict
         """
-        self.app.logger.debug(f'find_one(parameters={parameters})')
+        self.app.logger.info(f'Executing at: TaskRepository -'
+                             f' find_one(parameters={parameters})')
         return self.get_mongo_connection().db.task.find_one(parameters)
 
     def insert_one(self, task_id, description, status):
@@ -100,9 +93,10 @@ class TaskRepository:
         about insert operation.
         :rtype: pymongo.results.InsertOneResult
         """
-        self.app.logger.debug(f'insert_one(task_id={task_id},'
-                              f' description={description},'
-                              f' status={status})')
+        self.app.logger.info(f'Executing at: TaskRepository -'
+                             f' insert_one(task_id={task_id},'
+                             f' description={description},'
+                             f' status={status})')
         return self.get_mongo_connection()\
             .db.task.insert_one({"_id": task_id,
                                  "description": description,
@@ -120,8 +114,9 @@ class TaskRepository:
         update operation.
         :rtype: pymongo.results.UpdateResult
         """
-        self.app.logger.debug(f'update_one(parameters={parameters},'
-                              f' new_data={new_data})')
+        self.app.logger.info(f'Executing at: TaskRepository -'
+                             f' update_one(parameters={parameters},'
+                             f' new_data={new_data})')
         return self.get_mongo_connection()\
             .db.task.update_one(parameters, {"$set": new_data})
 
@@ -135,5 +130,6 @@ class TaskRepository:
         delete operation.
         :rtype: pymongo.results.DeleteResult
         """
-        self.app.logger.debug(f'delete_one(parameters={parameters})')
+        self.app.logger.info(f'Executing at: TaskRepository -'
+                             f' delete_one(parameters={parameters})')
         return self.get_mongo_connection().db.task.delete_one(parameters)
