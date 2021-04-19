@@ -8,7 +8,8 @@ from src import app
 os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 logging.basicConfig(filename="logFile.log", level=logging.DEBUG,
                     datefmt='%Y-%m-%d %H:%M:%S',
-                    format='%(asctime)s %(levelname)s-%(message)s')
+                    format='%(asctime)s %(levelname)s %(name)s %('
+                           'threadName)s: %(message)s')
 log = logging.getLogger('werkzeug')
 log.disabled = True
 

@@ -412,6 +412,16 @@ class TestRepository(unittest.TestCase):
         task = self.db.find_one({"_id": self.mock_task_id})
         self.assertEqual("TesteUpdate", task.get('description'))
 
+    def test_update_one_by_nonexistent_id(self):
+        """
+        Method to test if update_one works with nonexistent id.
+        """
+        print("In method", self._testMethodName)
+        self.db.update_one({"_id": 15},
+                           {"description": "TesteUpdate"})
+        task = self.db.find_one({"_id": 15})
+        self.assertEqual(None, task)
+
     def test_delete_one_by_id(self):
         """
         Method to test if delete_one really delete the register in
@@ -420,6 +430,15 @@ class TestRepository(unittest.TestCase):
         print("In method", self._testMethodName)
         self.db.delete_one({"_id": self.mock_task_id})
         task = self.db.find_one({"_id": self.mock_task_id})
+        self.assertEqual(None, task)
+
+    def test_delete_one_by_nonexistent_id(self):
+        """
+        Method to test if delete_one works with nonexistent id.
+        """
+        print("In method", self._testMethodName)
+        self.db.delete_one({"_id": 15})
+        task = self.db.find_one({"_id": 15})
         self.assertEqual(None, task)
 
 
